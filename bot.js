@@ -13,8 +13,7 @@ const timeout = (ms) => {
   const page = await browser.newPage();
   await page.goto('https://web.whatsapp.com', {waitUntil: ['domcontentloaded', 'networkidle0'], timeout: 0 });
   await timeout(10000);
-  //page.on('console', msg => { console.log(msg) });
-  
+
   global.sendMessage=async(index,msg)=>{
     console.log('2');  
     setInterval(()=>{
@@ -44,10 +43,4 @@ const timeout = (ms) => {
   },7000);
 
   await timeout(10000);
-  // await browser.close();
-
-
-
-  // await timeout(100);
-  // await global.sendMessage(page, "abhijeet", " If you are receiving this message, then, send functionility is done!!!")
-})();
+ })();

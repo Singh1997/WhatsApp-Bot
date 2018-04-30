@@ -16,22 +16,24 @@ const timeout = (ms) => {
 
   global.sendMessage=async(index,msg)=>{
     console.log('2');  
-    setInterval(()=>{
-    global.page.evaluate((i,m)=>{
+    await page.evaluate((i,m)=>{
+      setInterval(()=>{
+        if(Store.Chat.models[i].__x_name=="Jaldi marega saala bencho"){
       Store.Chat.models[i].sendMessage(m);
+    }
+    },10000);
      },index,msg);
-    },6000);
+   
   }
   await page.exposeFunction('passObject', (obj) => {
   for(var x in obj){
     console.log(obj[x].name);
-    if(obj[x].name=="Nitin Kiet"){
-      global.sendMessage(x,'?');
+    if(obj[x].name=="Jaldi marega saala bencho"){
+      global.sendMessage(x,'Kya bhai');
      
           }
          
   }
-  
 });
 
   global.page = page;
@@ -40,7 +42,7 @@ const timeout = (ms) => {
     global.page.evaluate(() => { 
      window.passObject(Store.Chat.models) 
    });
-  },7000);
+  },10000);
 
   await timeout(10000);
  })();

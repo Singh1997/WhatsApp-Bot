@@ -13,6 +13,9 @@
     "http-errors": "~1.6.2",
     "lodash": "^4.17.5",
     "morgan": "~1.9.0",
+    "node-gmail-api": "^0.6.1",
+    "passport": "^0.4.0",
+    "passport-google-oauth": "^1.0.0",
     "puppeteer": "^1.2.0"
   },
   "main": "bot.js",

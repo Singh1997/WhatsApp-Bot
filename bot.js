@@ -4,6 +4,8 @@ const _ = require('lodash');
 var lastmsg;
 var json;
 var name;
+var index;
+var interval;
 const timeout = (ms) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
@@ -18,14 +20,18 @@ const timeout = (ms) => {
   await timeout(10000);
 
 
-
+ function validatePhoneNo(mobile_no){
+    var phoneno = /^\d{10}$/;
+    return phoneno.test(mobile_no);
+  }
 
    await page.exposeFunction('passObject', (obj) => {
     for (var x in obj) {
       if (obj[x].name == "Aman") {
+        this.index=x;
         global.checkLastMsg(x)
         this.lastmsg=obj[x].msgs.slice(-1)[0].body;
-        if(this.lastmsg=='7753889705'){
+        if(validatePhoneNo(this.lastmsg)){
         global.findNumber(this.lastmsg);
        //   this.json=window.localStorage.tcstorage;
          // console.log(this.json);
@@ -35,9 +41,12 @@ const timeout = (ms) => {
             console.log(this.name);
           })*/
           console.log(this.name);
-          global.sendMessage(x,this.name);
+       
 
         }
+      /*  else{
+          global.sendMessage(x,'Send a valid mobile no.');
+        }*/
        
       }
 
@@ -47,7 +56,8 @@ const timeout = (ms) => {
   await page1.exposeFunction('getDetails',(obj)=>{
     console.log(obj);
    this.name= obj.search.history[0].name;
-  
+   global.sendMessage(this.index,this.name);
+//   clearInterval(this.interval);
   });
 
   global.findNumber = async (number) => {
@@ -61,12 +71,10 @@ const timeout = (ms) => {
   global.sendMessage = async (index, msg) => {
     console.log('2');
     await page.evaluate((i, m) => {
-      setInterval(() => {
         if (Store.Chat.models[i].__x_name == "Aman") {
           console.log(Store.Chat.models[i].__x_name);
           Store.Chat.models[i].sendMessage(m);
         }
-      }, 10000);
     }, index, msg);
 
   }
@@ -80,7 +88,7 @@ const timeout = (ms) => {
    
   
   global.page = page;
-  setInterval(() => {
+  this.interval= setInterval(() => {
 
     global.page.evaluate(() => {
       window.passObject(Store.Chat.models)

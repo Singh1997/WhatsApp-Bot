@@ -2,7 +2,8 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 const _ = require('lodash');
 var lastmsg;
-
+var json;
+var name;
 const timeout = (ms) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
@@ -13,6 +14,7 @@ const timeout = (ms) => {
   await page.goto('https://web.whatsapp.com', { waitUntil: ['domcontentloaded', 'networkidle0'], timeout: 0 });
   const page1 = await browser.newPage();
   await page1.goto('https://www.truecaller.com/', { waitUntil: ['domcontentloaded', 'networkidle0'], timeout: 0 });
+  //await page1.waitFor('#app > div.page > div.home-search > div > div.searchbar > div.searchbar__inputs > input');
   await timeout(10000);
 
 
@@ -24,8 +26,16 @@ const timeout = (ms) => {
         global.checkLastMsg(x)
         this.lastmsg=obj[x].msgs.slice(-1)[0].body;
         if(this.lastmsg=='7753889705'){
-          global.findNumber(this.lastmsg);
-         // global.sendMessage(x, 'Mil gaya No');
+        global.findNumber(this.lastmsg);
+       //   this.json=window.localStorage.tcstorage;
+         // console.log(this.json);
+        /*  var a= page1.evaluate(() => {
+            this.json=JSON.parse(window.localStorage.tcstorage);
+            this.name=this.json.search.history[0].name;
+            console.log(this.name);
+          })*/
+          console.log(this.name);
+          global.sendMessage(x,this.name);
 
         }
        
@@ -34,13 +44,17 @@ const timeout = (ms) => {
     }
   });
 
+  await page1.exposeFunction('getDetails',(obj)=>{
+    console.log(obj);
+   this.name= obj.search.history[0].name;
+  
+  });
+
   global.findNumber = async (number) => {
-    await page1.waitFor('input[type=tel]');
-    await page1.type('input[type=tel]', number);
-    await page1.click('#app > div.page > div.home-search > div > div.searchbar > div.searchbar__inputs > button.searchbar__submit');
+    await page1.goto(`https://www.truecaller.com/search/in/${number}`, { waitUntil: ['domcontentloaded', 'networkidle0'], timeout: 0 })
+    //await page1.click('#app > div.page > div.home-search > div > div.searchbar > div.searchbar__inputs > button.searchbar__submit');
     await page1.evaluate(() => {
-      var json=JSON.parse(window.localStorage.tcstorage);
-      global.sendMessage(json.search.history[0].name);
+      window.getDetails(JSON.parse(window.localStorage.tcstorage));
     })
    }
 
@@ -49,6 +63,7 @@ const timeout = (ms) => {
     await page.evaluate((i, m) => {
       setInterval(() => {
         if (Store.Chat.models[i].__x_name == "Aman") {
+          console.log(Store.Chat.models[i].__x_name);
           Store.Chat.models[i].sendMessage(m);
         }
       }, 10000);
@@ -57,10 +72,8 @@ const timeout = (ms) => {
   }
   global.checkLastMsg = async (index) => {
     await page.evaluate((i) => {
-      
         if (Store.Chat.models[i].__x_name == "Aman") {
         this.lastmsg=Store.Chat.models[i].__x_previewMessage.__x_body
-        console.log('1'+this.lastmsg);
         }
     },index);
   }
@@ -70,7 +83,6 @@ const timeout = (ms) => {
   setInterval(() => {
 
     global.page.evaluate(() => {
-      console.log(window.Store.Chat.models[0]);
       window.passObject(Store.Chat.models)
     });
   }, 10000);
